@@ -1,0 +1,112 @@
+skill: ci-failure-triage
+version: "0.1.0"
+
+catalog:
+  kind: skill
+  audience: public
+  visibility: public
+  role: canonical
+
+runx:
+  mutating: false
+  scopes:
+    - ci.logs.read
+    - repo.state.read
+  policy:
+    data_classification: public_ci_metadata
+    effects:
+      opens_tracking_items: false
+      reruns_ci: false
+      pages_operators: false
+      mints_authority: false
+    verifier_notes:
+      - Emits a read-only draft triage packet for downstream issue-intake, issue-to-pr, or pr-review-note.
+      - Stops at needs_agent when logs are truncated, contradictory, or below the configured confidence floor.
+  artifacts:
+    emits:
+      - triage_packet
+    wrap_as: ci_failure_triage_packet
+
+harness:
+  cases:
+    - name: real_break_clear_logs
+      runner: default
+      inputs:
+        ci_failure:
+          logs: |
+            npm test
+            FAIL tests/parser.test.ts
+            TypeError: Cannot read properties of undefined (reading 'items')
+            Expected 3 received 2
+            Tests failed in parser regression suite
+          commit: "1111111111111111111111111111111111111111"
+          repo_state:
+            branch: main
+            changed_files:
+              - src/parser.ts
+        repo_config:
+          default_branch: main
+          test_command: npm test
+        escalation_policy:
+          min_confidence: 0.75
+      expect:
+        status: sealed
+        receipt:
+          schema: runx.receipt.v1
+
+    - name: ambiguous_truncated_logs
+      runner: default
+      inputs:
+        ci_failure:
+          logs: "Error: job failed ... output truncated"
+          commit: "2222222222222222222222222222222222222222"
+          repo_state:
+            branch: main
+        repo_config:
+          default_branch: main
+        escalation_policy:
+          min_confidence: 0.75
+      expect:
+        status: needs_agent
+
+runners:
+  default:
+    default: true
+    type: cli-tool
+    command: node
+    args:
+      - run.mjs
+    scopes:
+      - ci.logs.read
+      - repo.state.read
+    policy:
+      reads:
+        - public CI failure logs
+        - public commit and repository state metadata
+      writes:
+        - triage-packet.json
+        - report.md
+      disallows:
+        - opening tracking items
+        - rerunning CI
+        - paging operators
+        - minting authority
+    inputs:
+      ci_failure:
+        type: json
+        required: true
+        description: Object containing logs, commit, and repo_state for one CI failure.
+      repo_config:
+        type: json
+        required: false
+        description: Repository policy context such as default branch and test command.
+      escalation_policy:
+        type: json
+        required: false
+        description: Object with min_confidence threshold for emitting a routing decision.
+      output_dir:
+        type: string
+        required: false
+        description: Directory inside the skill directory where artifacts should be written.
+    outputs:
+      triage_packet: object

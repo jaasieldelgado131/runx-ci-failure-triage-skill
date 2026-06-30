@@ -1,0 +1,70 @@
+name: Verify ci-failure-triage
+
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      registry_ref:
+        description: "Published ref, for example jaasieldelgado131/ci-failure-triage@sha-abcdef123456"
+        required: false
+        default: ""
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Prepare evidence directories
+        run: |
+          mkdir -p evidence receipts
+
+      - name: Record runx version
+        run: |
+          npx --yes @runxhq/cli@0.6.14 --version | tee evidence/runx-version.txt
+
+      - name: Unit tests
+        run: |
+          npm --prefix skills/ci-failure-triage test | tee evidence/unit-tests.txt
+
+      - name: Inline harness
+        env:
+          RUNX_RECEIPT_SIGN_KID: runx-demo-key
+          RUNX_RECEIPT_SIGN_ED25519_SEED_BASE64: QkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkI=
+          RUNX_RECEIPT_SIGN_ISSUER_TYPE: hosted
+          RUNX_RECEIPT_DIR: receipts
+        run: |
+          npx --yes @runxhq/cli@0.6.14 harness ./skills/ci-failure-triage --json | tee evidence/harness.json
+
+      - name: Published registry dogfood
+        if: ${{ github.event.inputs.registry_ref != '' }}
+        env:
+          REGISTRY_REF: ${{ github.event.inputs.registry_ref }}
+          RUNX_RECEIPT_SIGN_KID: runx-demo-key
+          RUNX_RECEIPT_SIGN_ED25519_SEED_BASE64: QkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkI=
+          RUNX_RECEIPT_SIGN_ISSUER_TYPE: hosted
+          RUNX_RECEIPT_DIR: receipts
+        run: |
+          npx --yes @runxhq/cli@0.6.14 registry read "$REGISTRY_REF" --registry https://api.runx.ai --json | tee evidence/registry-read.json
+          CI_FAILURE="$(node -e 'const f=require("./fixtures/dogfood-real-break.json"); process.stdout.write(JSON.stringify(f.ci_failure));')"
+          REPO_CONFIG="$(node -e 'const f=require("./fixtures/dogfood-real-break.json"); process.stdout.write(JSON.stringify(f.repo_config));')"
+          ESCALATION_POLICY="$(node -e 'const f=require("./fixtures/dogfood-real-break.json"); process.stdout.write(JSON.stringify(f.escalation_policy));')"
+          npx --yes @runxhq/cli@0.6.14 skill "$REGISTRY_REF" --registry https://api.runx.ai --input-json ci_failure="$CI_FAILURE" --input-json repo_config="$REPO_CONFIG" --input-json escalation_policy="$ESCALATION_POLICY" --receipt-dir receipts --json | tee evidence/dogfood.json
+          find receipts -type f -name '*.json' | sort | tee evidence/receipt-files.txt
+          RECEIPT_FILE="$(find receipts -type f -name '*.json' | sort | tail -n 1)"
+          npx --yes @runxhq/cli@0.6.14 verify --receipt "$RECEIPT_FILE" --allow-local-development-signatures --json | tee evidence/verification.json
+
+      - name: Upload evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-failure-triage-evidence
+          path: |
+            evidence/
+            receipts/
+

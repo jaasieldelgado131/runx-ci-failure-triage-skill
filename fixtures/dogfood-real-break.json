@@ -1,0 +1,20 @@
+{
+  "ci_failure": {
+    "logs": "npm test\nFAIL tests/parser.test.ts\nTypeError: Cannot read properties of undefined (reading 'items')\nExpected 3 received 2\nTests failed in parser regression suite",
+    "commit": "1111111111111111111111111111111111111111",
+    "repo_state": {
+      "branch": "main",
+      "changed_files": [
+        "src/parser.ts"
+      ]
+    }
+  },
+  "repo_config": {
+    "default_branch": "main",
+    "test_command": "npm test"
+  },
+  "escalation_policy": {
+    "min_confidence": 0.75
+  }
+}
+
