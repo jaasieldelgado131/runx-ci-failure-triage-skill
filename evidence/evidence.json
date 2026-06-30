@@ -1,0 +1,85 @@
+{
+  "schema": "frantic.runx.skill_evidence.v1",
+  "skill": "ci-failure-triage",
+  "package_ref": "jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a",
+  "public_url": "https://runx.ai/x/jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a",
+  "registry_read_ref": "jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a",
+  "source_url": "https://github.com/jaasieldelgado131/runx-ci-failure-triage-skill/tree/6fe47c6cfe1a8ef96faae81b192aa5fecbe0472e",
+  "workflow_url": "https://github.com/jaasieldelgado131/runx-ci-failure-triage-skill/actions/runs/28479995607",
+  "workflow_conclusion": "success",
+  "runx_cli": "runx-cli 0.6.14",
+  "published_registry": {
+    "status": "success",
+    "source": "remote",
+    "version": "sha-6fe47c6cfe1a",
+    "skill_id": "jaasieldelgado131/ci-failure-triage",
+    "digest": "b4cae3c0370b5889fe829f18b8e40fb70e38a21c19bae64e75620608875382d2",
+    "profile_digest": "4a55c960bbd9a47663563afe064f73916c9bab0efa57486c7b6c043806754cb7",
+    "trust_tier": "community",
+    "source_attestation": "github:jaasieldelgado131/runx-ci-failure-triage-skill@6fe47c6cfe1a8ef96faae81b192aa5fecbe0472e"
+  },
+  "harness": {
+    "status": "passed",
+    "case_count": 2,
+    "assertion_error_count": 0,
+    "case_names": [
+      "real_break_clear_logs",
+      "ambiguous_truncated_logs"
+    ],
+    "graph_case_count": 2,
+    "harness_receipt_ids": [
+      "sha256:0451ab36ad796858b5b9ca310efa386005b50837904f54c3f4b11f3e13bcbadd"
+    ]
+  },
+  "dogfood": {
+    "status": "sealed",
+    "graph": "ci-failure-triage",
+    "graph_status": "Succeeded",
+    "run_id": "run_default_c3b256130856",
+    "receipt_ref": "runx:receipt:sha256:24e063546d5aa81c00b4177f6c442dc2dcbb6bc891cb0ece8aa738495b1c8aaa",
+    "child_step_receipt_ref": "runx:receipt:sha256:1dc288abfa21923568de30416d677453e94cda5fd60b6efcca863ba2dabba595",
+    "registry_provenance": {
+      "skill_id": "jaasieldelgado131/ci-failure-triage",
+      "version": "sha-6fe47c6cfe1a",
+      "registry_source": "remote https://api.runx.ai",
+      "trust_state": "trusted"
+    },
+    "classification": {
+      "verdict": "real-break",
+      "confidence": 0.95,
+      "recommended_lane": "issue-to-pr",
+      "rationale": "clear code/test failure visible in logs",
+      "evidence_refs": [
+        "log:1 npm test",
+        "log:2 FAIL tests/parser.test.ts",
+        "log:3 TypeError: Cannot read properties of undefined (reading 'items')",
+        "log:4 Expected 3 received 2",
+        "log:5 Tests failed in parser regression suite"
+      ]
+    },
+    "policy_observations": {
+      "min_confidence": 0.75,
+      "no_tracking_item_opened": true,
+      "no_ci_rerun_executed": true,
+      "no_operator_paged": true,
+      "no_authority_minted": true
+    }
+  },
+  "verification": {
+    "receipt_id": "sha256:24e063546d5aa81c00b4177f6c442dc2dcbb6bc891cb0ece8aa738495b1c8aaa",
+    "valid": true,
+    "signature_status": "valid",
+    "kid": "runx-demo-key",
+    "findings": []
+  },
+  "acceptance_map": {
+    "exact_package_name_ci_failure_triage": true,
+    "public_pr_required": "pending in runxhq/runx",
+    "raw_x_yaml_and_skill_md_from_pr_head": "pending in runxhq/runx",
+    "public_registry_url_live": true,
+    "local_and_hosted_harness_passed": true,
+    "real_break_case_routes_to_issue_to_pr": true,
+    "ambiguous_truncated_case_stops_needs_agent": true,
+    "post_publish_dogfood_receipt_verified": true
+  }
+}
