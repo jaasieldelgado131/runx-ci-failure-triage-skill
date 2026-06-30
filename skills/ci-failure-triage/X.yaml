@@ -2,7 +2,7 @@ skill: ci-failure-triage
 version: "0.1.0"
 
 catalog:
-  kind: skill
+  kind: graph
   audience: public
   visibility: public
   role: canonical
@@ -72,25 +72,7 @@ harness:
 runners:
   default:
     default: true
-    type: cli-tool
-    command: node
-    args:
-      - run.mjs
-    scopes:
-      - ci.logs.read
-      - repo.state.read
-    policy:
-      reads:
-        - public CI failure logs
-        - public commit and repository state metadata
-      writes:
-        - triage-packet.json
-        - report.md
-      disallows:
-        - opening tracking items
-        - rerunning CI
-        - paging operators
-        - minting authority
+    type: graph
     inputs:
       ci_failure:
         type: json
@@ -108,5 +90,44 @@ runners:
         type: string
         required: false
         description: Directory inside the skill directory where artifacts should be written.
-    outputs:
-      triage_packet: object
+    graph:
+      name: ci-failure-triage
+      steps:
+        - id: classify
+          label: classify CI failure and emit triage packet
+          inputs:
+            ci_failure: "$input.ci_failure"
+            repo_config: "$input.repo_config"
+            escalation_policy: "$input.escalation_policy"
+            output_dir: "$input.output_dir"
+          run:
+            type: cli-tool
+            command: node
+            args:
+              - run.mjs
+          artifacts:
+            named_emits:
+              triage_packet: triage_packet
+            packets:
+              triage_packet: runx.ci.triage.v1
+
+        - id: human_lane
+          label: block ambiguous CI failure for agent review
+          when:
+            field: classify.triage_packet.data.status
+            equals: needs_agent
+          context:
+            reason: classify.triage_packet.data.escalation.reason
+            classification: classify.triage_packet.data.classification
+          run:
+            type: agent-task
+            agent: ci-triage-reviewer
+            task: resolve-ambiguous-ci-failure
+            outputs:
+              disposition: string
+              reviewed_classification: object
+              next_lane: object
+          instructions: >
+            Review only the supplied CI failure packet and reason. Do not infer
+            root cause, rerun CI, open issues, page operators, or mint
+            authority unless the missing evidence is supplied by the caller.

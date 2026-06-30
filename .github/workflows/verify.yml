@@ -27,10 +27,12 @@ jobs:
 
       - name: Record runx version
         run: |
+          set -euo pipefail
           npx --yes @runxhq/cli@0.6.14 --version | tee evidence/runx-version.txt
 
       - name: Unit tests
         run: |
+          set -euo pipefail
           npm --prefix skills/ci-failure-triage test | tee evidence/unit-tests.txt
 
       - name: Inline harness
@@ -40,6 +42,7 @@ jobs:
           RUNX_RECEIPT_SIGN_ISSUER_TYPE: hosted
           RUNX_RECEIPT_DIR: receipts
         run: |
+          set -euo pipefail
           npx --yes @runxhq/cli@0.6.14 harness ./skills/ci-failure-triage --json | tee evidence/harness.json
 
       - name: Published registry dogfood
@@ -49,19 +52,24 @@ jobs:
           RUNX_RECEIPT_SIGN_KID: runx-demo-key
           RUNX_RECEIPT_SIGN_ED25519_SEED_BASE64: QkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkI=
           RUNX_RECEIPT_SIGN_ISSUER_TYPE: hosted
+          RUNX_RECEIPT_VERIFY_KID: runx-demo-key
+          RUNX_RECEIPT_VERIFY_ED25519_PUBLIC_KEY_BASE64: IVL40Zt5HSRFMkLhXy6rbLfP+ntqXtMAl5YOBpiB2xI=
           RUNX_RECEIPT_DIR: receipts
         run: |
+          set -euo pipefail
           npx --yes @runxhq/cli@0.6.14 registry read "$REGISTRY_REF" --registry https://api.runx.ai --json | tee evidence/registry-read.json
           CI_FAILURE="$(node -e 'const f=require("./fixtures/dogfood-real-break.json"); process.stdout.write(JSON.stringify(f.ci_failure));')"
           REPO_CONFIG="$(node -e 'const f=require("./fixtures/dogfood-real-break.json"); process.stdout.write(JSON.stringify(f.repo_config));')"
           ESCALATION_POLICY="$(node -e 'const f=require("./fixtures/dogfood-real-break.json"); process.stdout.write(JSON.stringify(f.escalation_policy));')"
           npx --yes @runxhq/cli@0.6.14 skill "$REGISTRY_REF" --registry https://api.runx.ai --input-json ci_failure="$CI_FAILURE" --input-json repo_config="$REPO_CONFIG" --input-json escalation_policy="$ESCALATION_POLICY" --receipt-dir receipts --json | tee evidence/dogfood.json
           find receipts -type f -name '*.json' | sort | tee evidence/receipt-files.txt
-          RECEIPT_FILE="$(find receipts -type f -name '*.json' | sort | tail -n 1)"
-          npx --yes @runxhq/cli@0.6.14 verify --receipt "$RECEIPT_FILE" --allow-local-development-signatures --json | tee evidence/verification.json
+          DOGFOOD_RECEIPT_ID="$(node -e 'const fs=require("fs"); const j=JSON.parse(fs.readFileSync("evidence/dogfood.json","utf8")); process.stdout.write(j.receipt_id);')"
+          DOGFOOD_RECEIPT_FILE="receipts/${DOGFOOD_RECEIPT_ID}.json"
+          npx --yes @runxhq/cli@0.6.14 verify --receipt "$DOGFOOD_RECEIPT_FILE" --json | tee evidence/verification.json
 
       - name: Copy receipts with portable names
         run: |
+          set -euo pipefail
           mkdir -p evidence/receipts
           find receipts -type f -name '*.json' -print0 | while IFS= read -r -d '' file; do
             base="$(basename "$file" | tr ':' '_')"
