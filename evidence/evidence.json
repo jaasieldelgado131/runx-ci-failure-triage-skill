@@ -10,9 +10,47 @@
   "pr_mergeable": true,
   "x_yaml": "https://raw.githubusercontent.com/jaasieldelgado131/runx/4c9a3c5a643676ee13517bd1e338ceec2620adf5/skills/ci-failure-triage/X.yaml",
   "skill_md": "https://raw.githubusercontent.com/jaasieldelgado131/runx/4c9a3c5a643676ee13517bd1e338ceec2620adf5/skills/ci-failure-triage/SKILL.md",
+  "evidence_json": "https://raw.githubusercontent.com/jaasieldelgado131/runx-ci-failure-triage-skill/main/evidence/evidence.json",
+  "verification_json": "https://raw.githubusercontent.com/jaasieldelgado131/runx-ci-failure-triage-skill/main/evidence/verification.json",
+  "report": "https://raw.githubusercontent.com/jaasieldelgado131/runx-ci-failure-triage-skill/main/evidence/report.md",
   "workflow_url": "https://github.com/jaasieldelgado131/runx-ci-failure-triage-skill/actions/runs/28479995607",
   "workflow_conclusion": "success",
   "runx_cli": "runx-cli 0.6.14",
+  "publisher_owner": "jaasieldelgado131",
+  "publish_method": "url-as-publish via runx add https://github.com/jaasieldelgado131/runx-ci-failure-triage-skill --ref main --json",
+  "commands": {
+    "publish": "npx --yes @runxhq/cli@0.6.14 add https://github.com/jaasieldelgado131/runx-ci-failure-triage-skill --ref main --json",
+    "install": "runx add jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a --registry https://api.runx.ai",
+    "registry_read": "runx registry read jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a --registry https://api.runx.ai --json",
+    "hosted_harness": "GitHub Actions workflow: verify.yml",
+    "dogfood": "runx skill jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a --registry https://api.runx.ai --json",
+    "verify": "runx verify --receipt receipts/sha256_24e063546d5aa81c00b4177f6c442dc2dcbb6bc891cb0ece8aa738495b1c8aaa.json --json"
+  },
+  "observations": [
+    "runx --version: runx-cli 0.6.14",
+    "publisher owner: jaasieldelgado131",
+    "package name: ci-failure-triage",
+    "version: sha-6fe47c6cfe1a",
+    "registry ref: jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a",
+    "public_url: https://runx.ai/x/jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a",
+    "source_url: https://github.com/jaasieldelgado131/runx-ci-failure-triage-skill/tree/6fe47c6cfe1a8ef96faae81b192aa5fecbe0472e",
+    "pr_url: https://github.com/runxhq/runx/pull/195",
+    "raw x_yaml: https://raw.githubusercontent.com/jaasieldelgado131/runx/4c9a3c5a643676ee13517bd1e338ceec2620adf5/skills/ci-failure-triage/X.yaml",
+    "raw skill_md: https://raw.githubusercontent.com/jaasieldelgado131/runx/4c9a3c5a643676ee13517bd1e338ceec2620adf5/skills/ci-failure-triage/SKILL.md",
+    "verification_json: https://raw.githubusercontent.com/jaasieldelgado131/runx-ci-failure-triage-skill/main/evidence/verification.json",
+    "publish method: url-as-publish via runx add from public GitHub source",
+    "install command: runx add jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a --registry https://api.runx.ai",
+    "hosted harness status: passed",
+    "harness cases: real_break_clear_logs, ambiguous_truncated_logs",
+    "dogfood command: runx skill jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a --registry https://api.runx.ai --json",
+    "receipt_ref: runx:receipt:sha256:24e063546d5aa81c00b4177f6c442dc2dcbb6bc891cb0ece8aa738495b1c8aaa",
+    "runx verify verdict: valid true, signature valid, findings empty",
+    "classification verdict: real-break",
+    "classification confidence: 0.95",
+    "recommended_lane: issue-to-pr",
+    "escalation reason: none",
+    "cited evidence_refs: log:1 npm test; log:2 FAIL tests/parser.test.ts; log:3 TypeError: Cannot read properties of undefined (reading 'items'); log:4 Expected 3 received 2; log:5 Tests failed in parser regression suite"
+  ],
   "published_registry": {
     "status": "success",
     "source": "remote",
@@ -37,6 +75,35 @@
     ]
   },
   "dogfood": {
+    "package": "jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a",
+    "command": "runx skill jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a --registry https://api.runx.ai --json",
+    "input": {
+      "case": "real_break_clear_logs",
+      "input_digest": "c6266b2ec23038e031f56d18d18fd76645fc7b165509727ef71bbe49f06606fb",
+      "ci_failure": {
+        "commit": "1111111111111111111111111111111111111111",
+        "repo_state": {
+          "branch": "main",
+          "changed_files": [
+            "src/parser.ts"
+          ]
+        },
+        "log_summary": [
+          "npm test",
+          "FAIL tests/parser.test.ts",
+          "TypeError: Cannot read properties of undefined (reading 'items')",
+          "Expected 3 received 2",
+          "Tests failed in parser regression suite"
+        ]
+      },
+      "repo_config": {
+        "default_branch": "main",
+        "test_command": "npm test"
+      },
+      "escalation_policy": {
+        "min_confidence": 0.75
+      }
+    },
     "status": "sealed",
     "graph": "ci-failure-triage",
     "graph_status": "Succeeded",
@@ -62,6 +129,25 @@
         "log:5 Tests failed in parser regression suite"
       ]
     },
+    "verify_verdict": {
+      "valid": true,
+      "signature_status": "valid",
+      "kid": "runx-demo-key",
+      "findings": []
+    },
+    "harness_cases": [
+      {
+        "name": "real_break_clear_logs",
+        "status": "sealed",
+        "expected_verdict": "real-break",
+        "expected_recommended_lane": "issue-to-pr"
+      },
+      {
+        "name": "ambiguous_truncated_logs",
+        "status": "needs_agent",
+        "expected_routing_decision": null
+      }
+    ],
     "policy_observations": {
       "min_confidence": 0.75,
       "no_tracking_item_opened": true,

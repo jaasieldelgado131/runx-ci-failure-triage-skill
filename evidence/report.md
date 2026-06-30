@@ -49,6 +49,32 @@ Policy checks:
 - No authority was minted.
 - The output is a read-only draft routing packet for downstream governed lanes.
 
+## Reproduce
+
+Install:
+
+```bash
+runx add jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a --registry https://api.runx.ai
+```
+
+Inspect registry metadata:
+
+```bash
+runx registry read jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a --registry https://api.runx.ai --json
+```
+
+Run the skill:
+
+```bash
+runx skill jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a --registry https://api.runx.ai --json
+```
+
+Verify the dogfood receipt:
+
+```bash
+runx verify --receipt receipts/sha256_24e063546d5aa81c00b4177f6c442dc2dcbb6bc891cb0ece8aa738495b1c8aaa.json --json
+```
+
 ## Evidence files
 
 - `evidence.json` summarizes the package, registry read, harness, dogfood result, and acceptance mapping.
