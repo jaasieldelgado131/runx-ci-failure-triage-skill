@@ -1,5 +1,6 @@
 {
   "schema": "frantic.runx.skill_evidence.v1",
+  "summary": "Published ci-failure-triage runx skill with a live registry URL, public mergeable runxhq/runx PR, two-case hosted harness, post-publish dogfood receipt, and valid runx verification evidence.",
   "skill": "ci-failure-triage",
   "package_ref": "jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a",
   "public_url": "https://runx.ai/x/jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a",
