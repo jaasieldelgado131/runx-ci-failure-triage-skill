@@ -6,6 +6,12 @@ Public registry URL: https://runx.ai/x/jaasieldelgado131/ci-failure-triage@sha-6
 
 Source revision: https://github.com/jaasieldelgado131/runx-ci-failure-triage-skill/tree/6fe47c6cfe1a8ef96faae81b192aa5fecbe0472e
 
+Upstream PR: https://github.com/runxhq/runx/pull/195
+
+Raw `X.yaml`: https://raw.githubusercontent.com/jaasieldelgado131/runx/4c9a3c5a643676ee13517bd1e338ceec2620adf5/skills/ci-failure-triage/X.yaml
+
+Raw `SKILL.md`: https://raw.githubusercontent.com/jaasieldelgado131/runx/4c9a3c5a643676ee13517bd1e338ceec2620adf5/skills/ci-failure-triage/SKILL.md
+
 Workflow evidence: https://github.com/jaasieldelgado131/runx-ci-failure-triage-skill/actions/runs/28479995607
 
 ## Summary
@@ -14,6 +20,8 @@ Workflow evidence: https://github.com/jaasieldelgado131/runx-ci-failure-triage-s
 - The published registry ref is `jaasieldelgado131/ci-failure-triage@sha-6fe47c6cfe1a`.
 - The run used `runx-cli 0.6.14`.
 - The hosted registry read succeeded against `https://api.runx.ai`.
+- The upstream PR is public and mergeable.
+- The PR-head `X.yaml` and `SKILL.md` raw URLs are public.
 - The Linux workflow completed successfully.
 - The inline harness passed with 2 cases and 0 assertion errors.
 - The harness case `real_break_clear_logs` sealed successfully.
